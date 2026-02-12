@@ -16,7 +16,8 @@ body {
 }
 
 h1 { font-size: 22px; margin-bottom: 5px; }
-
+<input type="text" id="nama" placeholder="Masukkan Nama" required>
+<button onclick="kirimNilai()">Kirim Nilai</button>
 #score {
     font-size: 18px;
     margin-bottom: 15px;
@@ -188,6 +189,30 @@ dropzones.forEach(zone=>{
     });
 });
 
+function kirimNilai(){
+
+    const nama = document.getElementById("nama").value;
+
+    if(nama === ""){
+        alert("Masukkan nama dulu!");
+        return;
+    }
+
+    const formURL = "https://docs.google.com/forms/d/e/1FAIpQLSfSBJXHRZRkTykWNwE2GChKsB_q9nWt1XnsLsac13MOJJnNxg/formResponse";
+
+    const formData = new FormData();
+    formData.append("entry.492767856", nama);  // GANTI ENTRY NAMA
+    formData.append("entry.568859612", score); // GANTI ENTRY SKOR
+
+    fetch(formURL, {
+        method: "POST",
+        mode: "no-cors",
+        body: formData
+    });
+
+    alert("Nilai berhasil dikirim!");
+}
+    
 function resetGame(){
     score = 0;
     scoreDisplay.innerHTML="Skor: 0";
@@ -207,3 +232,4 @@ shuffleItems();
 
 </body>
 </html>
+
