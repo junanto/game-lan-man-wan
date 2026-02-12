@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bangun Jaringan - Acak Item</title>
+
+<style>
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg,#1e3c72,#2a5298);
+    color: white;
+    margin: 0;
+    padding: 15px;
+    text-align: center;
+}
+
+h1 { font-size: 22px; margin-bottom: 5px; }
+
+#score {
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.dropzone {
+    background: rgba(255,255,255,0.15);
+    border: 2px dashed white;
+    border-radius: 15px;
+    padding: 15px;
+    min-height: 150px;
+}
+
+.dropzone h2 {
+    margin-top: 0;
+    font-size: 18px;
+}
+
+.items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+
+.item {
+    background: white;
+    color: black;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none;
+    font-size: 14px;
+}
+
+.item.selected {
+    background: #ff9800;
+    color: white;
+}
+
+.item.correct {
+    background: #4CAF50;
+    color: white;
+    cursor: default;
+}
+
+.item.wrong {
+    background: #f44336;
+    color: white;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    background: #ff9800;
+    color: white;
+    margin-top: 10px;
+}
+
+.feedback {
+    margin-top: 10px;
+    font-size: 16px;
+    min-height: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🎮 Bangun Jaringan yang Tepat</h1>
+<p>Pilih item → lalu pilih kategori jaringan</p>
+<div id="score">Skor: 0</div>
+
+<div class="container">
+    <div class="dropzone" data-type="LAN">
+        <h2>🏫 LAN</h2>
+    </div>
+    <div class="dropzone" data-type="MAN">
+        <h2>🏙 MAN</h2>
+    </div>
+    <div class="dropzone" data-type="WAN">
+        <h2>🌍 WAN</h2>
+    </div>
+</div>
+
+<div class="items" id="items">
+
+    <!-- LAN -->
+    <div class="item" data-type="LAN">Lab Komputer Sekolah</div>
+    <div class="item" data-type="LAN">30 PC dalam 1 Gedung</div>
+    <div class="item" data-type="LAN">Jaringan Kantor 1 Lantai</div>
+
+    <!-- MAN -->
+    <div class="item" data-type="MAN">Antar Kantor dalam 1 Kota</div>
+    <div class="item" data-type="MAN">Jaringan Pemerintah Kota</div>
+    <div class="item" data-type="MAN">Universitas dalam Satu Kota</div>
+
+    <!-- WAN -->
+    <div class="item" data-type="WAN">Perusahaan Antar Negara</div>
+    <div class="item" data-type="WAN">Internet Global</div>
+    <div class="item" data-type="WAN">Cabang Jakarta - Tokyo</div>
+
+</div>
+
+<div class="feedback" id="feedback"></div>
+<button onclick="resetGame()">🔄 Reset Game</button>
+
+<script>
+let selectedItem = null;
+let score = 0;
+
+const itemsContainer = document.getElementById("items");
+const items = document.querySelectorAll(".item");
+const dropzones = document.querySelectorAll(".dropzone");
+const feedback = document.getElementById("feedback");
+const scoreDisplay = document.getElementById("score");
+
+function shuffleItems() {
+    const itemsArray = Array.from(itemsContainer.children);
+    for (let i = itemsArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [itemsArray[i], itemsArray[j]] = [itemsArray[j], itemsArray[i]];
+    }
+    itemsArray.forEach(item => itemsContainer.appendChild(item));
+}
+
+items.forEach(item=>{
+    item.addEventListener("click", function(){
+        if(this.classList.contains("correct")) return;
+
+        items.forEach(i=>i.classList.remove("selected"));
+        this.classList.add("selected");
+        selectedItem = this;
+    });
+});
+
+dropzones.forEach(zone=>{
+    zone.addEventListener("click", function(){
+        if(!selectedItem) return;
+
+        const correctType = selectedItem.dataset.type;
+        const dropType = this.dataset.type;
+
+        if(correctType === dropType){
+            this.appendChild(selectedItem);
+            selectedItem.classList.remove("selected");
+            selectedItem.classList.add("correct");
+            score += 10;
+            feedback.innerHTML="✅ Benar!";
+        } else {
+            selectedItem.classList.add("wrong");
+            feedback.innerHTML="❌ Salah! Coba lagi.";
+            setTimeout(()=>selectedItem.classList.remove("wrong"),800);
+        }
+
+        scoreDisplay.innerHTML="Skor: " + score;
+        selectedItem = null;
+    });
+});
+
+function resetGame(){
+    score = 0;
+    scoreDisplay.innerHTML="Skor: 0";
+    feedback.innerHTML="";
+    selectedItem = null;
+
+    items.forEach(item=>{
+        item.classList.remove("correct","wrong","selected");
+        itemsContainer.appendChild(item);
+    });
+
+    shuffleItems();
+}
+
+shuffleItems();
+</script>
+
+</body>
+</html>
